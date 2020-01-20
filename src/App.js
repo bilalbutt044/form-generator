@@ -1,9 +1,6 @@
 import React from "react";
 import FormGenerator from "./FormGenerator";
 
-const formSubmit = e => {
-  e.preventDefault();
-};
 function App() {
   let formArray = [
     {
@@ -12,7 +9,11 @@ function App() {
       placeholder: "enter name",
       required: false,
       name: "text",
-      validation: "string|min:8"
+      validation: {
+        minLength: 2,
+        maxLength: 5,
+        pattern: "^[a-z]+$"
+      }
     },
     {
       type: "textarea",
@@ -20,33 +21,67 @@ function App() {
       placeholder: "textare",
       required: false,
       name: "textArea",
-      validation: "string|min:8"
+      validation: {
+        minLength: 2,
+        maxLength: 5,
+        pattern: "^[a-z]+$"
+      }
     },
     {
       type: "select",
+      multiple: false,
       label: `select`,
-      placeholder: "",
       required: false,
       name: "select",
-      validation: "string|min:8",
-      options: [1, 2, 3, 4]
+      options: [
+        {
+          option: 1,
+          value: "option1"
+        },
+        {
+          option: 2,
+          value: "option2"
+        },
+        {
+          option: 3,
+          value: "option3"
+        },
+        {
+          option: 4,
+          value: "option4"
+        }
+      ]
     },
     {
-      type: "selectMultiple",
+      type: "select",
+      multiple: true,
       label: `select Multiple`,
-      placeholder: "",
       required: false,
       name: "selectMultiple",
-      validation: "string|min:8",
-      options: [1, 2, 3, 4]
+      options: [
+        {
+          option: 1,
+          value: "option1"
+        },
+        {
+          option: 2,
+          value: "option2"
+        },
+        {
+          option: 3,
+          value: "option3"
+        },
+        {
+          option: 4,
+          value: "option4"
+        }
+      ]
     },
     {
       type: "file",
       label: `file`,
-      placeholder: "",
       required: false,
-      name: "file",
-      validation: "string|min:8"
+      name: "file"
     },
     {
       type: "email",
@@ -54,29 +89,32 @@ function App() {
       placeholder: "enter email",
       required: false,
       name: "email",
-      validation: "email"
+      validation: {
+        pattern: /^(([^<>()[]\\.,;:s@"]+(.[^<>()[]\\.,;:s@"]+)*)|(".+"))@(([[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}])|(([a-zA-Z-0-9]+.)+[a-zA-Z]{2,}))$/
+      }
     },
     {
       type: "checkbox",
       label: `checkbox`,
       required: false,
-      name: "checkbox"
+      name: "checkbox",
+      value: "checkbox value"
     },
     {
       type: "radio",
       label: `radio Button`,
       required: false,
-      name: "radio"
+      name: "radio",
+      value: "radio1"
     },
     {
       type: "radio",
       label: `radio Button`,
       required: false,
-      name: "radio"
+      name: "radio",
+      value: "radio2"
     }
   ];
-
-  let result = [];
 
   const getValues = item => {
     console.log(item);

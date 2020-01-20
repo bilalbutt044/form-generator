@@ -2,116 +2,83 @@ import React from "react";
 import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
 
 const FormGenerator = ({ formArray, getValues }) => {
+  let result = {};
   const handleSubmit = e => {
     e.preventDefault();
-    let result = [];
-
-    for (let index = 0; index < formArray.length; index++) {
-      let element = document.getElementById(index);
-      let key = document.getElementById(index).name;
-      let value = document.getElementById(index).value;
-
-      if (
-        (element.type === "checkbox" && element.checked) ||
-        (element.type === "radio" && element.checked)
-      ) {
-        value = element.value;
-      } else if (
-        (element.type === "checkbox" && !element.checked) ||
-        (element.type === "radio" && !element.checked)
-      )
-        value = "";
-
-      result.push({ [key]: value });
-    }
-
     getValues(result);
   };
 
+  const handleChange = e => {
+    if (e.target.name === "selectMultiple") {
+      result = {
+        ...result,
+        [e.target.name]: [...e.target.options]
+          .filter(({ selected }) => selected)
+          .map(({ value }) => value)
+      };
+    } else result = { ...result, [e.target.name]: e.target.value };
+  };
   let form = (
     <Form onSubmit={handleSubmit}>
-      {formArray.map((item, index) => {
+      {formArray.map(({ label, validation, ...rest }, index) => {
         if (
-          item.type === "text" ||
-          item.type === "textarea" ||
-          item.type === "email"
+          rest.type === "text" ||
+          rest.type === "textarea" ||
+          rest.type === "email" ||
+          rest.type === "checkbox" ||
+          rest.type === "radio" ||
+          rest.type === "file"
         ) {
           return (
             <FormGroup key={index}>
-              <Label for={item.name}>{item.label}</Label>
+              <Label for={rest.name}>{label}</Label>
               <Input
-                type={item.type}
-                name={item.name}
-                id={index}
-                placeholder={item.placeHolder ? item.placeHolder : null}
-                required={item.required}
-                minLength="5"
+                {...rest}
+                {...validation}
+                onChange={e => handleChange(e)}
               />
             </FormGroup>
           );
-        } else if (item.type === "checkbox" || item.type === "radio") {
+        } else if (rest.type === "select" && rest.multiple === false) {
+          let { options } = rest;
           return (
             <FormGroup key={index}>
-              <Label>
-                <Input
-                  type={item.type}
-                  name={item.name}
-                  required={item.required}
-                  id={index}
-                  value="bilal"
-                />
-                {item.label}
-              </Label>
-            </FormGroup>
-          );
-        } else if (item.type === "select") {
-          return (
-            <FormGroup key={index}>
-              <Label for={item.name}>{item.label}</Label>
-              <Input type={item.type} name={item.name} id={index}>
-                {item.options
-                  ? item.options.map(i => {
+              <Label for={rest.name}>{label}</Label>
+              <Input {...rest} id={index} onChange={e => handleChange(e)}>
+                {options
+                  ? options.map(i => {
                       return (
-                        <React.Fragment>
-                          <option>{i}</option>
-                        </React.Fragment>
+                        <>
+                          <option value={i.value}>{i.option}</option>
+                        </>
                       );
                     })
                   : null}
               </Input>
             </FormGroup>
           );
-        } else if (item.type === "selectMultiple") {
+        } else if (rest.type === "select" && rest.multiple === true) {
+          let { options } = rest;
+
           return (
             <FormGroup key={index}>
-              <Label for={item.name}>{item.label}</Label>
-              <Input type="select" name={item.name} multiple id={index}>
-                {item.options
-                  ? item.options.map(i => {
-                      return (
-                        <React.Fragment>
-                          <option>{i}</option>
-                        </React.Fragment>
-                      );
-                    })
-                  : null}
-              </Input>
-            </FormGroup>
-          );
-        } else if (item.type === "file") {
-          return (
-            <FormGroup key={index}>
-              <Label for={item.name}>{item.label}</Label>
+              <Label for={rest.name}>{label}</Label>
               <Input
-                type={item.type}
-                name={item.name}
-                required={item.required}
+                {...rest}
+                multiple
                 id={index}
-              ></Input>
-              <FormText color="muted">
-                This is some placeholder block-level help text for the above
-                input.
-              </FormText>
+                onChange={e => handleChange(e)}
+              >
+                {options
+                  ? options.map(i => {
+                      return (
+                        <>
+                          <option value={i.value}>{i.option}</option>
+                        </>
+                      );
+                    })
+                  : null}
+              </Input>
             </FormGroup>
           );
         }
